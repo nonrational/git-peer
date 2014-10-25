@@ -44,8 +44,8 @@ class GitFern
     walker.hide(from.target)
     walker.push(to.target)
 
-    walker.find_all { |commit| commit.pr_merge? }.each { |m| puts m.to_pr_str }
+    walker.find_all { |commit| commit.pr_merge? }
   end
 end
 
-GitFern.new.merges_between("2.8.9", "2.8.10")
+GitFern.new.merges_between("2.6.1", "2.6.2").each { |m| puts m.to_pr_str }
