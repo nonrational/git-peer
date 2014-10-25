@@ -3,6 +3,7 @@ require "github_api"
 require "rugged"
 
 class Rugged::Commit
+
   def merge_regex
     @merge_regex ||= /Merge pull request #([0-9]+) from [^\/]+\/(\S+)\s+(.*)$/
   end
@@ -12,9 +13,21 @@ class Rugged::Commit
   end
 
   def to_pr_str
-    m = merge_regex.match(self.message)
-    "#{m[1]} : #{m[2]} : #{m[3][0,35]}"
+    "#{pr_number} | #{pr_branch_name} : #{pr_description}"
   end
+
+  def pr_number
+    pr_merge?[1]
+  end
+
+  def pr_branch_name
+    pr_merge?[2]
+  end
+
+  def pr_description
+    pr_merge?[3]
+  end
+
 end
 
 class GitFern
@@ -24,10 +37,6 @@ class GitFern
 
   def tag_by_name(tag_name)
     repo.tags.find {|tag| tag.name == tag_name }
-  end
-
-  def pr_by_number(pr_number)
-
   end
 
   def merges_between(from_tag_name, to_tag_name)
