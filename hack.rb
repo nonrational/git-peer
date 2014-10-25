@@ -50,7 +50,8 @@ class GitFern
     body = pr.body.strip
     url = pr.html_url
     trello = body[/https?:\/\/trello.com\S+/,0]
-    "##{pr_number} #{title} #{trello}"
+
+    "##{pr_number} #{title}\n\t#{url}\n\t#{trello}"
   end
 
   def merges_between(from_tag_name, to_tag_name)
