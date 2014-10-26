@@ -8,11 +8,12 @@
 # hacked-in functionality to wrap in Git::Fern
 #
 
+require "colored"
 require "octokit"
 require "rugged"
+require "pp"
 
 class Rugged::Commit
-
   def merge_regex
     @merge_regex ||= /Merge pull request #([0-9]+) from [^\/]+\/(\S+)\s+(.*)$/
   end
@@ -21,20 +22,8 @@ class Rugged::Commit
     merge_regex.match(self.message)
   end
 
-  def to_pr_str
-    "#{pr_number} | #{pr_branch_name} : #{pr_description}"
-  end
-
   def pr_number
     pr_merge?[1]
-  end
-
-  def pr_branch_name
-    pr_merge?[2]
-  end
-
-  def pr_description
-    pr_merge?[3]
   end
 end
 
@@ -53,14 +42,27 @@ class GitFern
 
   def pr_for_commit(commit)
     pr_number = commit.pr_number
+
+    # https://developer.github.com/v3/pulls/
     pr = remote.rels[:pulls].get(uri: {number: pr_number}).data
 
+    into = case pr.base.ref
+      when 'master'
+        pr.base.ref.red
+      when 'stage'
+        pr.base.ref.yellow
+      when 'develop'
+        pr.base.ref.green
+    end
+
+    # TODO ERB these vars up into HTML
+    username = pr.user.login
     title = pr.title.strip
     body = pr.body.strip
     url = pr.html_url
     trello = body[/https?:\/\/trello.com\S+/,0]
 
-    "##{pr_number} #{title}\n\t#{url}\n\t#{trello}"
+    "##{pr_number}".blue + " (#{into},#{username}) #{title}\n\t#{url}\n\t#{trello}"
   end
 
   def merges_between(from_tag_name, to_tag_name)
@@ -84,4 +86,8 @@ class GitFern
 end
 
 fern = GitFern.new
-fern.merges_between("2.8.16", "2.8.17").each { |m| puts fern.pr_for_commit(m) }
+merges = fern.merges_between("2.8.16", "2.8.17")
+
+puts "Found #{merges.size} merges."
+
+merges.each { |m| puts fern.pr_for_commit(m) }

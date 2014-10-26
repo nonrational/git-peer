@@ -24,5 +24,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "octokit", "~> 3.0"
   spec.add_dependency "rugged", "~> 0.21"
+  spec.add_dependency "colored", '~> 1.2'
 
 end
