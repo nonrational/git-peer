@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Git::Fern::VERSION
   spec.authors       = ["Alan Norton"]
   spec.email         = ["me@alannorton.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{List GitHub PR Merge between two tags}
+  spec.description   = ""
   spec.homepage      = ""
   spec.license       = "MIT"
 

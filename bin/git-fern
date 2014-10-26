@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require "git/fern"
 
-
+Git::Fern.yell
