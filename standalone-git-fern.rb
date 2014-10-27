@@ -30,10 +30,17 @@ end
 class GitFern
 
   def initialize
-    @repo = Rugged::Repository.discover("/Users/norton/src/better-core")
-    @hub = Octokit::Client.new(:access_token => ENV['GITHUB_API_TOKEN'])
-    remote_path = /https?:\/\/(\.?\w+)+\/([^?]+)/.match(repo.branches.find { |b| b.canonical_name == repo.head.canonical_name }.remote.url)[2]
-    @remote = @hub.repo(remote_path)
+    begin
+      @repo = Rugged::Repository.discover("/Users/norton/src/better-core")
+      original_branch_name = repo.head.canonical_name
+      @repo.checkout('master')
+      remote_path = /https?:\/\/(\.?\w+)+\/([^?]+)/.match(repo.branches.find { |b| b.canonical_name == repo.head.canonical_name }.remote.url)[2]
+
+      @hub = Octokit::Client.new(:access_token => ENV['GITHUB_API_TOKEN'])
+      @remote = @hub.repo(remote_path)
+    ensure
+      @repo.checkout(original_branch_name)
+    end
   end
 
   def tag_by_name(tag_name)
