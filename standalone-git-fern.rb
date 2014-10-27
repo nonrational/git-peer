@@ -75,9 +75,10 @@ class GitFern
     title = pr.title.strip
     body = pr.body.strip
     url = pr.html_url
+    merged_at = pr.merged_at
     trello = body[/https?:\/\/trello.com\S+/,0]
 
-    "##{pr_number}".blue + " (#{into},#{username}) #{title}\n\t#{url}\n\t#{trello}"
+    "##{pr_number}".blue + " (#{into} by #{username} at #{merged_at}) ~> #{url}\n\t#{title}\n\t#{trello}"
   end
 
   def merged_to_here(from_tag_name)
