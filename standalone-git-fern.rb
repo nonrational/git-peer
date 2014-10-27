@@ -86,8 +86,11 @@ class GitFern
 end
 
 fern = GitFern.new
-merges = fern.merges_between("2.8.16", "2.8.17")
+# TODO: Use ARGV / Thor
+from_tag_name="2.8.16"
+to_tag_name="2.8.17"
+merges = fern.merges_between(from_tag_name, to_tag_name)
 
-puts "Found #{merges.size} merges."
+puts "Found #{merges.size} merges between #{from_tag_name}..#{to_tag_name}"
 
 merges.each { |m| puts fern.pr_for_commit(m) }
