@@ -85,19 +85,15 @@ class GitFern
   end
 
   def merges_between_tags(from_tag_name, to_tag_name)
-
-    from = tag_by_name from_tag_name
-    to = tag_by_name to_tag_name
-
-    if !(from and to)
-      raise "#{from_tag_name}...#{to_tag_name} is invalid"
-    end
-
-    merges_between_targets(from.target, to.target)
+    merges_between_targets(tag_by_name from_tag_name, tag_by_name to_tag_name)
   end
 
 
   def merges_between_targets(from_target, to_target)
+    if !(from_target and to_target)
+      raise "#{from_tag_name}...#{to_tag_name} is invalid"
+    end
+
     walker = Rugged::Walker.new(repo)
     walker.hide(from_target)
     walker.push(to_target)
