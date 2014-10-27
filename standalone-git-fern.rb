@@ -47,6 +47,14 @@ class GitFern
     repo.tags.find {|tag| tag.name == tag_name }
   end
 
+  def branch_by_name(ref_name)
+    raise "UNIMPLEMENTED"
+  end
+
+  def commit_by_hash(short_hash)
+    raise "UNIMPLEMENTED"
+  end
+
   def pr_for_commit(commit)
     pr_number = commit.pr_number
 
@@ -72,7 +80,11 @@ class GitFern
     "##{pr_number}".blue + " (#{into},#{username}) #{title}\n\t#{url}\n\t#{trello}"
   end
 
-  def merges_between(from_tag_name, to_tag_name)
+  def merged_to_here(from_tag_name)
+    merges_between_targets(tag_by_name(from_tag_name).target, repo.head.target)
+  end
+
+  def merges_between_tags(from_tag_name, to_tag_name)
 
     from = tag_by_name from_tag_name
     to = tag_by_name to_tag_name
@@ -81,23 +93,24 @@ class GitFern
       raise "#{from_tag_name}...#{to_tag_name} is invalid"
     end
 
+    merges_between_targets(from.target, to.target)
+  end
+
+
+  def merges_between_targets(from_target, to_target)
     walker = Rugged::Walker.new(repo)
-
-    walker.hide(from.target)
-    walker.push(to.target)
-
+    walker.hide(from_target)
+    walker.push(to_target)
     walker.find_all { |commit| commit.pr_merge? }
   end
 
   attr_reader :repo, :hub, :remote
 end
 
-fern = GitFern.new
 # TODO: Use ARGV / Thor
+# git fern <tag>..HEAD #DEFAULT
+fern = GitFern.new
 from_tag_name="2.8.16"
-to_tag_name="2.8.17"
-merges = fern.merges_between(from_tag_name, to_tag_name)
-
-puts "Found #{merges.size} merges between #{from_tag_name}..#{to_tag_name}"
-
+merges = fern.merged_to_here(from_tag_name)
+puts "Found #{merges.size} merges between #{from_tag_name}..HEAD"
 merges.each { |m| puts fern.pr_for_commit(m) }
