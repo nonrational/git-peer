@@ -106,7 +106,7 @@ end
 # TODO: Use ARGV / Thor
 # git fern <tag>..HEAD #DEFAULT
 fern = GitFern.new
-from_tag_name="2.8.16"
+from_tag_name="2.8.18.9"
 merges = fern.merged_to_here(from_tag_name)
 puts "Found #{merges.size} merges between #{from_tag_name}..HEAD"
 merges.each { |m| puts fern.pr_for_commit(m) }
