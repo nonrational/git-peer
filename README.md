@@ -1,6 +1,6 @@
 # Git::Peer
 
-Peer into your code diffs with the greatest of ease.
+Peer into your release diffs--between git refs--with the greatest of ease.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Or install it yourself as:
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/git-peer/fork )
+1. Fork it ( https://github.com/nonrational/git-peer/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
