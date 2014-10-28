@@ -18,8 +18,10 @@ module Git
       @repo.checkout(original_branch_name)
     end
 
-    def print(from_tag_name)
+    def run(from_tag_name)
+      print_now "Fetching"
       merges = merged_to_here(from_tag_name)
+      puts ""
       merges.each { |m| puts m }
       puts "Found #{merges.size} PR merges between #{from_tag_name}..HEAD"
     end
@@ -32,9 +34,9 @@ module Git
       merges_between_targets(tag_by_name(from_tag_name).target, repo.head.target)
     end
 
-    def merges_between_tags(from_tag_name, to_tag_name)
-      merges_between_targets(tag_by_name(from_tag_name), tag_by_name(to_tag_name))
-    end
+    # def merges_between_tags(from_tag_name, to_tag_name)
+    #   merges_between_targets(tag_by_name(from_tag_name), tag_by_name(to_tag_name))
+    # end
 
     def merges_between_targets(from_target, to_target)
       if !(from_target and to_target)
@@ -44,7 +46,6 @@ module Git
       walker = Rugged::Walker.new(repo)
       walker.hide(from_target)
       walker.push(to_target)
-      print_now "Fetching"
 
       walker.find_all { |commit| Git::PullRequestMerge::MATCHER.match(commit.message) }.map { |rc| Git::PullRequestMerge.new(rc, remote) }
     end
