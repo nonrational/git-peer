@@ -11,7 +11,6 @@
 require "colored"
 require "octokit"
 require "rugged"
-require "pp"
 
 class PullRequestMerge
 
@@ -33,12 +32,14 @@ class PullRequestMerge
       @title = pr.title.strip
       @pr_url = pr.html_url
       @trello_url = pr.body[/https?:\/\/trello.com\S+/,0]
+    else
+      raise "#{rugged_commit} does not represent a GitHub PR Merge!"
     end
   end
 
   def to_s
     # TODO ERB these vars up into HTML
-    "##{pr_number}".blue + " (#{into} by #{username} at #{merged_at}) ~> #{pr_url}\n\t#{title}\n\t#{trello_url}"
+    "##{pr_number}".blue + " (#{into}".red + " by " + "#{username}".green + " at #{merged_at}) ~> #{pr_url}\n\t#{title}\n\t#{trello_url}"
   end
 
   attr_reader :commit, :remote, :pr, :pr_number, :into, :username, :merged_at, :pr_url, :title, :trello_url
@@ -46,14 +47,12 @@ end
 
 class GitFern
 
-  POST_DOMAIN_PATH_MATCHER=/https?:\/\/(\.?\w+)+\/([^?]+)/
-
   def initialize(local_repo_dir, default_branch)
     @repo = Rugged::Repository.discover(local_repo_dir)
     original_branch_name = repo.head.canonical_name
     @repo.checkout(default_branch)
 
-    remote_path = POST_DOMAIN_PATH_MATCHER.match(repo.branches.find { |b| b.canonical_name == repo.head.canonical_name }.remote.url)[2]
+    remote_path = /https?:\/\/(\.?\w+)+\/([^?]+)/.match(repo.branches.find { |b| b.canonical_name == repo.head.canonical_name }.remote.url)[2]
 
     @hub = Octokit::Client.new(:access_token => ENV['GITHUB_API_TOKEN'])
     @remote = @hub.repo(remote_path)
@@ -63,8 +62,8 @@ class GitFern
 
   def print(from_tag_name)
     merges = merged_to_here(from_tag_name)
-    puts "Found #{merges.size} merges between #{from_tag_name}..HEAD"
     merges.each { |m| puts m }
+    puts "Found #{merges.size} PR merges between #{from_tag_name}..HEAD"
   end
 
   def tag_by_name(tag_name)
