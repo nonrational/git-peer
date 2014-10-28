@@ -1,6 +1,7 @@
 require "octokit"
 require "rugged"
 require "git/pull_request_merge"
+require "util"
 
 module Git
   class Fern
@@ -43,6 +44,8 @@ module Git
       walker = Rugged::Walker.new(repo)
       walker.hide(from_target)
       walker.push(to_target)
+      print_now "Fetching"
+
       walker.find_all { |commit| Git::PullRequestMerge::MATCHER.match(commit.message) }.map { |rc| Git::PullRequestMerge.new(rc, remote) }
     end
 

@@ -7,5 +7,3 @@ require 'git/fern'
 # TODO: Use ARGV / Thor
 # git fern <tag>..HEAD #DEFAULT
 Git::Fern.new("/Users/norton/src/better-core", "master").print("2.8.18.9")
-
-

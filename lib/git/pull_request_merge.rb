@@ -1,4 +1,5 @@
 require "colored"
+require "util"
 
 module Git
   class PullRequestMerge
@@ -11,7 +12,7 @@ module Git
 
       if match_result = MATCHER.match(commit.message)
         @pr_number = match_result[1]
-        puts "Fetching #{pr_number} ..."
+        print_now '.'
 
         @pr = remote.rels[:pulls].get(uri: {number: pr_number}).data
         # https://developer.github.com/v3/pulls/
@@ -27,7 +28,6 @@ module Git
     end
 
     def to_s
-      # TODO ERB these vars up into HTML
       "##{pr_number}".blue + " (#{into}".red + " by " + "#{username}".green + " at #{merged_at}) ~> #{pr_url}\n\t#{title}\n\t#{trello_url}"
     end
 
