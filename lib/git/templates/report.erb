@@ -1,13 +1,34 @@
 <html>
-  <head><title><%= from_tag_name %></title></head>
+  <head>
+    <title>git-peer : <%= from_tag_name %>..HEAD</title>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+      }
+      .branch-master {
+        color: #D00;
+      }
+      .branch-develop {
+        color: #0D0;
+      }
+      .branch-stage {
+        color: #00D;
+      }
+      .trello_url {
+        display: inline-block;
+        width: 30px;
+      }
+    </style>
+  </head>
   <body>
-    <ul>
+    <ul class="peer">
       <% merges.each do |r| %>
-        <li class="pull-request">
-            <ul class="details">
-                <li class="number"><%= r.pr_number %></li><li> class="title"><%= r.title %></li><li> class="into"><%= r.into %></li><li> class="username"><%= r.username %></li><li> class="merged_at"><%= r.merged_at %></li><li> class="pr_url"><%= r.pr_url %></li><li> class="trello_url"><%= r.trello_url %></li>
-            </ul>
-        </li>
+      <li class="header">
+        <a href="<%= r.pr_url %>">#<%= r.pr_number %></a>
+        [<span class="trello_url"><% if r.trello_url %><a href="<%= r.trello_url %>">CARD</a><% end %></span>]
+        <span class="title"><%= r.title %></span>
+        (<span class="branch-<%= r.into %>"><%= r.into %></span> by <%= r.username %> @ <%= r.merged_at %>)
+      </li>
       <% end %>
     </ul>
   </body>

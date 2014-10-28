@@ -2,25 +2,23 @@
 
 Peer into your release diffs--between git refs--with the greatest of ease.
 
+JIRA be damned. `git peer` is here to list PRs that were merged&mdash;and their [trello.com]() card links if available&mdash;from a tag ref to HEAD.
+
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'git-peer'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Install it yourself as:
 
     $ gem install git-peer
 
-## Usage
+## Command Line Usage
 
-`git peer x.y.z`
+```bash
+git peer $FROM_TAG..HEAD
+
+git peer $FROM_TAG..$TO_TAG --print
+
+git peer $FROM_TAG..$TO_TAG --output-file ./path/to/output.html
+```
 
 ## Contributing
 

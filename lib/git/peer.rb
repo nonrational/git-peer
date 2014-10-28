@@ -3,18 +3,20 @@ require "rugged"
 require "git/pull_request_merge"
 require "util"
 require "erb"
+require "trollop"
 
 module Git
   class Peer
+
     def initialize(local_repo_dir, default_branch)
       @repo = Rugged::Repository.discover(local_repo_dir)
       original_branch_name = repo.head.canonical_name
       @repo.checkout(default_branch)
 
       remote_path = /https?:\/\/(\.?\w+)+\/([^?]+)/.match(repo.branches.find { |b| b.canonical_name == repo.head.canonical_name }.remote.url)[2]
-
       @hub = Octokit::Client.new(:access_token => ENV['GITHUB_API_TOKEN'])
       @remote = @hub.repo(remote_path)
+
     ensure
       @repo.checkout(original_branch_name)
     end
@@ -24,20 +26,7 @@ module Git
       print_now "Fetching"
       @merges = merged_to_here(from_tag_name)
       puts ""
-    end
-
-    def to_stdout
-      merges.each { |m| puts m }
-      puts "Found #{merges.size} PR merges between #{from_tag_name}..HEAD"
-    end
-
-    # def save(file)
-    #   renderer = ERB.new('report.erb', self)
-    #   # File.open(file, "w+") { |f| f.write(renderer) }
-    # end
-
-    def render(template)
-      ERB.new(template).result(binding)
+      self
     end
 
     def tag_by_name(tag_name)
@@ -60,9 +49,23 @@ module Git
       walker.find_all { |commit| Git::PullRequestMerge::MATCHER.match(commit.message) }.map { |rc| Git::PullRequestMerge.new(rc, remote) }
     end
 
-    attr_reader :repo, :hub, :remote, :merges, :from_tag_name
+    def to_stdout
+      merges.each { |m| puts m }
+      puts "Found #{merges.size} PR merges between #{from_tag_name}..HEAD"
+      self
+    end
 
-    private
+    def to_file(output_file = "peer__#{from_tag_name}.html")
+      html = self.render(File.read('lib/git/templates/report.erb'))
+      File.write(output_file, html)
+      self
+    end
+
+    def render(template)
+      ERB.new(template).result(binding)
+    end
+
+    attr_reader :repo, :hub, :remote, :merges, :from_tag_name
 
   end
 end
