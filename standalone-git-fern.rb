@@ -13,72 +13,62 @@ require "octokit"
 require "rugged"
 require "pp"
 
-class Rugged::Commit
-  def merge_regex
-    @merge_regex ||= /Merge pull request #([0-9]+) from [^\/]+\/(\S+)\s+(.*)$/
+class PullRequestMerge
+
+  MATCHER = /Merge pull request #([0-9]+) from [^\/]+\/(\S+)\s+(.*)$/
+
+  def initialize(rugged_commit, octokit_remote)
+    @commit = rugged_commit
+    @remote = octokit_remote
+
+    if match_result = MATCHER.match(commit.message)
+      @pr_number = match_result[1]
+      puts "Fetching #{pr_number} ..."
+
+      @pr = remote.rels[:pulls].get(uri: {number: pr_number}).data
+      # https://developer.github.com/v3/pulls/
+      @into = pr.base.ref
+      @username = pr.user.login
+      @merged_at = pr.merged_at
+      @title = pr.title.strip
+      @pr_url = pr.html_url
+      @trello_url = pr.body[/https?:\/\/trello.com\S+/,0]
+    end
   end
 
-  def pr_merge?
-    merge_regex.match(self.message)
+  def to_s
+    # TODO ERB these vars up into HTML
+    "##{pr_number}".blue + " (#{into} by #{username} at #{merged_at}) ~> #{pr_url}\n\t#{title}\n\t#{trello_url}"
   end
 
-  def pr_number
-    pr_merge?[1]
-  end
+  attr_reader :commit, :remote, :pr, :pr_number, :into, :username, :merged_at, :pr_url, :title, :trello_url
 end
 
 class GitFern
 
-  def initialize
-    begin
-      @repo = Rugged::Repository.discover("/Users/norton/src/better-core")
-      original_branch_name = repo.head.canonical_name
-      @repo.checkout('master')
-      remote_path = /https?:\/\/(\.?\w+)+\/([^?]+)/.match(repo.branches.find { |b| b.canonical_name == repo.head.canonical_name }.remote.url)[2]
+  POST_DOMAIN_PATH_MATCHER=/https?:\/\/(\.?\w+)+\/([^?]+)/
 
-      @hub = Octokit::Client.new(:access_token => ENV['GITHUB_API_TOKEN'])
-      @remote = @hub.repo(remote_path)
-    ensure
-      @repo.checkout(original_branch_name)
-    end
+  def initialize(local_repo_dir, default_branch)
+    @repo = Rugged::Repository.discover(local_repo_dir)
+    original_branch_name = repo.head.canonical_name
+    @repo.checkout(default_branch)
+
+    remote_path = POST_DOMAIN_PATH_MATCHER.match(repo.branches.find { |b| b.canonical_name == repo.head.canonical_name }.remote.url)[2]
+
+    @hub = Octokit::Client.new(:access_token => ENV['GITHUB_API_TOKEN'])
+    @remote = @hub.repo(remote_path)
+  ensure
+    @repo.checkout(original_branch_name)
+  end
+
+  def print(from_tag_name)
+    merges = merged_to_here(from_tag_name)
+    puts "Found #{merges.size} merges between #{from_tag_name}..HEAD"
+    merges.each { |m| puts m }
   end
 
   def tag_by_name(tag_name)
     repo.tags.find {|tag| tag.name == tag_name }
-  end
-
-  def branch_by_name(ref_name)
-    raise "UNIMPLEMENTED"
-  end
-
-  def commit_by_hash(short_hash)
-    raise "UNIMPLEMENTED"
-  end
-
-  def pr_for_commit(commit)
-    pr_number = commit.pr_number
-
-    # https://developer.github.com/v3/pulls/
-    pr = remote.rels[:pulls].get(uri: {number: pr_number}).data
-
-    into = case pr.base.ref
-      when 'master'
-        pr.base.ref.red
-      when 'stage'
-        pr.base.ref.yellow
-      when 'develop'
-        pr.base.ref.green
-    end
-
-    # TODO ERB these vars up into HTML
-    username = pr.user.login
-    title = pr.title.strip
-    body = pr.body.strip
-    url = pr.html_url
-    merged_at = pr.merged_at
-    trello = body[/https?:\/\/trello.com\S+/,0]
-
-    "##{pr_number}".blue + " (#{into} by #{username} at #{merged_at}) ~> #{url}\n\t#{title}\n\t#{trello}"
   end
 
   def merged_to_here(from_tag_name)
@@ -97,7 +87,7 @@ class GitFern
     walker = Rugged::Walker.new(repo)
     walker.hide(from_target)
     walker.push(to_target)
-    walker.find_all { |commit| commit.pr_merge? }
+    walker.find_all { |commit| PullRequestMerge::MATCHER.match(commit.message) }.map { |rc| PullRequestMerge.new(rc, remote) }
   end
 
   attr_reader :repo, :hub, :remote
@@ -105,8 +95,6 @@ end
 
 # TODO: Use ARGV / Thor
 # git fern <tag>..HEAD #DEFAULT
-fern = GitFern.new
-from_tag_name="2.8.18.9"
-merges = fern.merged_to_here(from_tag_name)
-puts "Found #{merges.size} merges between #{from_tag_name}..HEAD"
-merges.each { |m| puts fern.pr_for_commit(m) }
+GitFern.new("/Users/norton/src/better-core", "master").print("2.8.18.9")
+
+
