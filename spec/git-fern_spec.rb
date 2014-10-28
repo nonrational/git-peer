@@ -1,7 +1,7 @@
 require "git/fern"
 
 describe Git::Fern do
-  it "says 'yay'" do
-    Git::Fern.yell.should eq("yay");
+  context "with no constructor arguments" do
+    expect { Git::Fern.new }.to raise_error(ArgumentError)
   end
 end

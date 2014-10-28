@@ -1,5 +1,5 @@
 module Git
-  module Fern
+  class Fern
     VERSION = "0.0.1"
   end
 end
