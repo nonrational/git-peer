@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in git-fern.gemspec
+# Specify your gem's dependencies in git-peer.gemspec
 gemspec

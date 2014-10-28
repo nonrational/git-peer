@@ -1,7 +1,7 @@
-require "git/fern"
+require "git/peer"
 
-describe Git::Fern do
+describe Git::Peer do
   it "explodes with no constructor arguments" do
-    expect { Git::Fern.new }.to raise_error(ArgumentError)
+    expect { Git::Peer.new }.to raise_error(ArgumentError)
   end
 end

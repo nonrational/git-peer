@@ -1,14 +1,14 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'git/fern/version'
+require 'git/peer/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "git-fern"
-  spec.version       = Git::Fern::VERSION
+  spec.name          = "git-peer"
+  spec.version       = Git::Peer::VERSION
   spec.authors       = ["Alan Norton"]
   spec.email         = ["me@alannorton.com"]
-  spec.summary       = %q{List GitHub PR Merge between two tags}
+  spec.summary       = %q{List GitHub PR merges between two git refs}
   spec.description   = ""
   spec.homepage      = ""
   spec.license       = "MIT"

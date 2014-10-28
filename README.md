@@ -1,13 +1,13 @@
-# Git::Fern
+# Git::Peer
 
-TODO: Write a gem description
+Peer into your code diffs with the greatest of ease.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'git-fern'
+gem 'git-peer'
 ```
 
 And then execute:
@@ -16,15 +16,15 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install git-fern
+    $ gem install git-peer
 
 ## Usage
 
-TODO: Write usage instructions here
+`git peer x.y.z`
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/git-fern/fork )
+1. Fork it ( https://github.com/[my-github-username]/git-peer/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

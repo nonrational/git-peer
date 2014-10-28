@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require "git/peer"
+
+Git::Peer.yell

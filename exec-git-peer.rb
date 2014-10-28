@@ -2,8 +2,8 @@
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'git/fern'
+require 'git/peer'
 
 # TODO: Use ARGV / Thor
-# git fern <tag>..HEAD #DEFAULT
-Git::Fern.new("/Users/norton/src/better-core", "master").run("2.8.18.9")
+# git peer <tag>..HEAD #DEFAULT
+Git::Peer.new("/Users/norton/src/better-core", "master").run("2.8.18.9")

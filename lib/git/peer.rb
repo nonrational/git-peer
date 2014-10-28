@@ -4,7 +4,7 @@ require "git/pull_request_merge"
 require "util"
 
 module Git
-  class Fern
+  class Peer
     def initialize(local_repo_dir, default_branch)
       @repo = Rugged::Repository.discover(local_repo_dir)
       original_branch_name = repo.head.canonical_name
@@ -33,10 +33,6 @@ module Git
     def merged_to_here(from_tag_name)
       merges_between_targets(tag_by_name(from_tag_name).target, repo.head.target)
     end
-
-    # def merges_between_tags(from_tag_name, to_tag_name)
-    #   merges_between_targets(tag_by_name(from_tag_name), tag_by_name(to_tag_name))
-    # end
 
     def merges_between_targets(from_target, to_target)
       if !(from_target and to_target)
