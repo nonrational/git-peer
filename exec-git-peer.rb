@@ -6,4 +6,7 @@ require 'git/peer'
 
 # TODO: Use ARGV / Thor
 # git peer <tag>..HEAD #DEFAULT
-Git::Peer.new("/Users/norton/src/better-core", "master").run("2.8.18.9")
+peer = Git::Peer.new("/Users/norton/src/better-core", "master")
+peer.run("2.8.18.11")
+puts peer.render(File.read('lib/git/templates/report.erb'))
+# peer.to_stdout

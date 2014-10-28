@@ -1,0 +1,14 @@
+<html>
+  <head><title><%= from_tag_name %></title></head>
+  <body>
+    <ul>
+      <% merges.each do |r| %>
+        <li class="pull-request">
+            <ul class="details">
+                <li class="number"><%= r.pr_number %></li><li> class="title"><%= r.title %></li><li> class="into"><%= r.into %></li><li> class="username"><%= r.username %></li><li> class="merged_at"><%= r.merged_at %></li><li> class="pr_url"><%= r.pr_url %></li><li> class="trello_url"><%= r.trello_url %></li>
+            </ul>
+        </li>
+      <% end %>
+    </ul>
+  </body>
+</html>

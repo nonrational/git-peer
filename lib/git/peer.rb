@@ -2,6 +2,7 @@ require "octokit"
 require "rugged"
 require "git/pull_request_merge"
 require "util"
+require "erb"
 
 module Git
   class Peer
@@ -19,11 +20,24 @@ module Git
     end
 
     def run(from_tag_name)
+      @from_tag_name = from_tag_name
       print_now "Fetching"
-      merges = merged_to_here(from_tag_name)
+      @merges = merged_to_here(from_tag_name)
       puts ""
+    end
+
+    def to_stdout
       merges.each { |m| puts m }
       puts "Found #{merges.size} PR merges between #{from_tag_name}..HEAD"
+    end
+
+    # def save(file)
+    #   renderer = ERB.new('report.erb', self)
+    #   # File.open(file, "w+") { |f| f.write(renderer) }
+    # end
+
+    def render(template)
+      ERB.new(template).result(binding)
     end
 
     def tag_by_name(tag_name)
@@ -46,6 +60,9 @@ module Git
       walker.find_all { |commit| Git::PullRequestMerge::MATCHER.match(commit.message) }.map { |rc| Git::PullRequestMerge.new(rc, remote) }
     end
 
-    attr_reader :repo, :hub, :remote
+    attr_reader :repo, :hub, :remote, :merges, :from_tag_name
+
+    private
+
   end
 end
