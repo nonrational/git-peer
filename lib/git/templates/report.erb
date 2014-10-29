@@ -21,13 +21,14 @@
     </style>
   </head>
   <body>
+    <h1><%= from_tag_name %>..HEAD</h1>
     <ul class="peer">
       <% merges.each do |r| %>
       <li class="header">
         <a href="<%= r.pr_url %>">#<%= r.pr_number %></a>
         [<span class="trello_url"><% if r.trello_url %><a href="<%= r.trello_url %>">CARD</a><% end %></span>]
         <span class="title"><%= r.title %></span>
-        (<span class="branch-<%= r.into %>"><%= r.into %></span> by <%= r.username %> @ <%= r.merged_at %>)
+        (<span class="branch-<%= r.into %>"><%= r.into %></span> by <a href="https://github.com/<%= r.username %>">@<%= r.username %></a> at <%= r.merged_at %>)
       </li>
       <% end %>
     </ul>
