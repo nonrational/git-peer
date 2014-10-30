@@ -18,6 +18,17 @@
         display: inline-block;
         width: 30px;
       }
+      .committer a {
+        color: gray;
+      }
+      .committer {
+        width: 150px;
+        display: inline-block;
+        text-align: right;
+      }
+      a:link, a:visited, a:hover, a:active {
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
@@ -27,8 +38,9 @@
       <li class="header">
         <a href="<%= r.pr_url %>">#<%= r.pr_number %></a>
         [<span class="trello_url"><% if r.trello_url %><a href="<%= r.trello_url %>">CARD</a><% end %></span>]
+        <span class="committer"><a href="https://github.com/<%= r.username %>">@<%= r.username %></a></span>
         <span class="title"><%= r.title %></span>
-        (<span class="branch-<%= r.into %>"><%= r.into %></span> by <a href="https://github.com/<%= r.username %>">@<%= r.username %></a> at <%= r.merged_at %>)
+<!--         (<span class="branch-<%= r.into %>"><%= r.into %></span> by  at <%= r.merged_at %>) -->
       </li>
       <% end %>
     </ul>
